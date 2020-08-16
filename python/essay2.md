@@ -23,10 +23,10 @@
 
   * 循环定义
 
-  ```
+  ```py
         martrix=[]
         for i in range(3):
-              martrix.append([0]*3)  
+              martrix.append([0]*3)
   ```
 
 
