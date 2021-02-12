@@ -48,60 +48,12 @@
 
   可以将RDD用toDF方法转换成DataFrame
 
-```
+```scala
 #将RDD转换成DataFrame
-
-
-rdd
- = 
-sc
-.
-parallelize
-([(
-"LiLei"
-,
-15
-,
-88
-),(
-"HanMeiMei"
-,
-16
-,
-90
-),(
-"DaChui"
-,
-17
-,
-60
-)])
-
-
-df
- = 
-rdd
-.
-toDF
-([
-"name"
-,
-"age"
-,
-"score"
-])
-
-
-df
-.
-show
-()
-
-
-df
-.
-printSchema
-()
+    rdd = sc.parallelize([("LiLei",15,88),("HanMeiMei",16,90),("DaChui",17,60)])
+    df = rdd.toDF(["name","age","score"])
+    df.show()
+    df.printSchema()
 ```
 
 ![](file:///Users/wuzhibo/Library/Application Support/typora-user-images/image-20210211162810848.png?lastModify=1613125365 "image-20210211162810848")
@@ -110,11 +62,7 @@ printSchema
 
 ```
 Michael,29
-
-
 Andy,30
-
-
 Justin,19
 ```
 
@@ -137,7 +85,7 @@ scala> val ds=rdd.map(_.split(",")).map(x=>(x(0),x(1).trim().toInt)).toDF("name"
 ```scala
 scala> case class people(name:String,age:Long)
     defined class people
-    
+
     scala> rdd.map(_.split(",")).map(x=>(people(x(0),x(1).trim.toInt))).toDF()
     res44: org.apache.spark.sql.DataFrame = [name: string, age: bigint]
 ```
@@ -148,91 +96,57 @@ scala> case class people(name:String,age:Long)
    # 在一些时候不能直接定义case类，就用这种方法
     scala> val rdd=sc.textFile("people.txt")
     rdd: org.apache.spark.rdd.RDD[String] = people.txt MapPartitionsRDD[97] at textFile at <console>:27
-    
+
     scala> val schemaString = "name age"
     schemaString: String = name age
-    
+
     scala> import org.apache.spark.sql.types._
     import org.apache.spark.sql.types._
-    
+
     scala> val fields = schemaString.split(" ").map(fieldName => StructField(fieldName, StringType, nullable = true))
     fields: Array[org.apache.spark.sql.types.StructField] = Array(StructField(name,StringType,true), StructField(age,StringType,true))
-    
+
     scala> val schems=StructType(fields)
     schems: org.apache.spark.sql.types.StructType = StructType(StructField(name,StringType,true), StructField(age,StringType,true))
-    
+
     scala> import org.apache.spark.sql._
     import org.apache.spark.sql._
-    
+
     scala> val rowrdd=rdd.map(_.split(",")).map(attributes => Row(attributes(0), attributes(1).trim))
     rowrdd: org.apache.spark.rdd.RDD[org.apache.spark.sql.Row] = MapPartitionsRDD[99] at map at <console>:35
-    
+
     scala> spark.createDataFrame(rowrdd,schems)
     res46: org.apache.spark.sql.DataFrame = [name: string, age: string]
 ```
 
 ### RDD转DataSet
 
-```
-scala
->
- rdd.map(_.split(
-","
-)).map
-(x
-=
->
-(x(0),x(1).trim().toInt)).toDS()
-
-
-res17: org.apache.spark.sql.Dataset[(String, Int)] 
-=
- [_1: string, _2: int]
+```scala
+scala> rdd.map(_.split(",")).map(x=>(x(0),x(1).trim().toInt)).toDS()
+    res17: org.apache.spark.sql.Dataset[(String, Int)] = [_1: string, _2: int]
 ```
 
 ### DataFrame/Dataset转RDD
 
 ```
-scala
->
- ds.rdd
-
-
-scala
->
- df.rdd
+scala> ds.rdd
+    scala> df.rdd
 ```
 
 ### DataFrame转Dataset
 
-```
-scala
->
- case class people(name:String,age:Long)
-
-
-defined class people
-
-
-​
-
-
-scala
->
- df.as[people]
-
-
-res39: org.apache.spark.sql.Dataset[people] 
-=
- [age: bigint, name: string]
+```scala
+scala> case class people(name:String,age:Long)
+    defined class people
+    
+    scala> df.as[people]
+    res39: org.apache.spark.sql.Dataset[people] = [age: bigint, name: string]
 ```
 
 ### Dataset转DataFrame
 
 ```
-scala
->
- ds.toDF()
+scala> ds.toDF()
 ```
 
 
