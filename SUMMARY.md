@@ -9,4 +9,5 @@
   * [hive-optimizing](hive/hive-optimizing.md)
 * [Engineering Ability](engineering-ability.md)
   * [Maven IDEA Spark](engineering-ability/maven-idea-spark.md)
+  * [maven pom e.g.](engineering-ability/maven-pom-eg.md)
 
