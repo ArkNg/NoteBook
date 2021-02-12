@@ -7,4 +7,6 @@
   * Spark SQL Study
 * [Hive](hive.md)
   * [hive-optimizing](hive/hive-optimizing.md)
+* [Engineering Ability](engineering-ability.md)
+  * [Maven IDEA Spark](engineering-ability/maven-idea-spark.md)
 
