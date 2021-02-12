@@ -106,8 +106,6 @@ printSchema
 
 ![](file:///Users/wuzhibo/Library/Application Support/typora-user-images/image-20210211162810848.png?lastModify=1613125365 "image-20210211162810848")
 
-
-
 **people.txt**
 
 ```
@@ -122,219 +120,55 @@ Justin,19
 
 ### RDD转DataFrames
 
-```
-scala
->
- val 
-rdd
-=
-sc.textFile(
-"people.txt"
-)
-
-
-rdd: org.apache.spark.rdd.RDD[String] 
-=
- people.txt MapPartitionsRDD[44] at textFile at 
-<
-console
->
-:24
+```scala
+scala> val rdd=sc.textFile("people.txt")
+    rdd: org.apache.spark.rdd.RDD[String] = people.txt MapPartitionsRDD[44] at textFile at <console>:24
 ```
 
 #### 方式一：直接指定列名和数据类型
 
-```
-scala
->
- val 
-ds
-=
-rdd.map(_.split(
-","
-)).map
-(x
-=
->
-(x(0),x(1).trim().toInt)).toDF(
-"name"
-,
-"age"
-)
-
-
-ds: org.apache.spark.sql.DataFrame 
-=
- [name: string, age: int]
+```scala
+scala> val ds=rdd.map(_.split(",")).map(x=>(x(0),x(1).trim().toInt)).toDF("name","age")
+    ds: org.apache.spark.sql.DataFrame = [name: string, age: int]
 ```
 
 #### 方式二：通过反射转换
 
-```
-scala
->
- case class people(name:String,age:Long)
-
-
-defined class people
-
-
-​
-
-
-scala
->
- rdd.map(_.split(
-","
-)).map
-(x
-=
->
-(people(x(0),x(1).trim.toInt))).toDF()
-
-
-res44: org.apache.spark.sql.DataFrame 
-=
- [name: string, age: bigint]
+```scala
+scala> case class people(name:String,age:Long)
+    defined class people
+    
+    scala> rdd.map(_.split(",")).map(x=>(people(x(0),x(1).trim.toInt))).toDF()
+    res44: org.apache.spark.sql.DataFrame = [name: string, age: bigint]
 ```
 
 #### 方式三：通过编程设置Schema（StructType）
 
-```
-# 在一些时候不能直接定义case类，就用这种方法
-
-
-scala
->
- val 
-rdd
-=
-sc.textFile(
-"people.txt"
-)
-
-
-rdd: org.apache.spark.rdd.RDD[String] 
-=
- people.txt MapPartitionsRDD[97] at textFile at 
-<
-console
->
-:27
-
-
-​
-
-
-scala
->
- val schemaString 
-=
-"name age"
-
-
-schemaString: String 
-=
- name age
-
-
-​
-
-
-scala
->
- import org.apache.spark.sql.types._
-
-
-import org.apache.spark.sql.types._
-
-
-​
-
-
-scala
->
- val fields 
-=
- schemaString.split(
-" "
-).map(fieldName 
-=
->
- StructField(fieldName, StringType, nullable 
-=
-true
-))
-
-
-fields: Array[org.apache.spark.sql.types.StructField] 
-=
- Array(StructField(name,StringType,true), StructField(age,StringType,true))
-
-
-​
-
-
-scala
->
- val 
-schems
-=
-StructType(fields)
-
-
-schems: org.apache.spark.sql.types.StructType 
-=
- StructType(StructField(name,StringType,true), StructField(age,StringType,true))
-
-
-​
-
-
-scala
->
- import org.apache.spark.sql._
-
-
-import org.apache.spark.sql._
-
-
-​
-
-
-scala
->
- val 
-rowrdd
-=
-rdd.map(_.split(
-","
-)).map(attributes 
-=
->
- Row(attributes(0), attributes(1).trim))
-
-
-rowrdd: org.apache.spark.rdd.RDD[org.apache.spark.sql.Row] 
-=
- MapPartitionsRDD[99] at map at 
-<
-console
->
-:35
-
-
-​
-
-
-scala
->
- spark.createDataFrame(rowrdd,schems)
-
-
-res46: org.apache.spark.sql.DataFrame 
-=
- [name: string, age: string]
+```scala
+   # 在一些时候不能直接定义case类，就用这种方法
+    scala> val rdd=sc.textFile("people.txt")
+    rdd: org.apache.spark.rdd.RDD[String] = people.txt MapPartitionsRDD[97] at textFile at <console>:27
+    
+    scala> val schemaString = "name age"
+    schemaString: String = name age
+    
+    scala> import org.apache.spark.sql.types._
+    import org.apache.spark.sql.types._
+    
+    scala> val fields = schemaString.split(" ").map(fieldName => StructField(fieldName, StringType, nullable = true))
+    fields: Array[org.apache.spark.sql.types.StructField] = Array(StructField(name,StringType,true), StructField(age,StringType,true))
+    
+    scala> val schems=StructType(fields)
+    schems: org.apache.spark.sql.types.StructType = StructType(StructField(name,StringType,true), StructField(age,StringType,true))
+    
+    scala> import org.apache.spark.sql._
+    import org.apache.spark.sql._
+    
+    scala> val rowrdd=rdd.map(_.split(",")).map(attributes => Row(attributes(0), attributes(1).trim))
+    rowrdd: org.apache.spark.rdd.RDD[org.apache.spark.sql.Row] = MapPartitionsRDD[99] at map at <console>:35
+    
+    scala> spark.createDataFrame(rowrdd,schems)
+    res46: org.apache.spark.sql.DataFrame = [name: string, age: string]
 ```
 
 ### RDD转DataSet
