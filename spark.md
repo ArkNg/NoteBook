@@ -138,7 +138,7 @@ scala> ds.rdd
 ```scala
 scala> case class people(name:String,age:Long)
     defined class people
-    
+
     scala> df.as[people]
     res39: org.apache.spark.sql.Dataset[people] = [age: bigint, name: string]
 ```
