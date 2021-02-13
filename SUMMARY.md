@@ -10,4 +10,6 @@
 * [Engineering Ability](engineering-ability.md)
   * [Maven IDEA Spark](engineering-ability/maven-idea-spark.md)
   * [maven pom e.g.](engineering-ability/maven-pom-eg.md)
+* [Scala](scala.md)
+  * [Scala 柯里化](scala/scala-ke-li-hua.md)
 
